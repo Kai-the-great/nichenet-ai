@@ -30,7 +30,7 @@ export default function HomePage() {
       const data = await response.json();
       setListing(data.listing);
 
-    } catch (err: any) {
+    } catch (err: Error) {
       setError(err.message);
     } finally {
       setIsLoading(false);
