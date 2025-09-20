@@ -1,6 +1,4 @@
-// src/app/page.tsx
-
-"use client";
+// s"use client";
 
 import { useState } from 'react';
 
@@ -30,8 +28,12 @@ export default function HomePage() {
       const data = await response.json();
       setListing(data.listing);
 
-    } catch (err: Error) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }
