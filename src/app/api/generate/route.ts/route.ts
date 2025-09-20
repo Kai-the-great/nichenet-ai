@@ -1,8 +1,5 @@
-// src/app/api/generate/route.ts
-
 import { NextResponse } from 'next/server';
 
-// This is the specific model we'll use from Hugging Face.
 const AI_MODEL = "mistralai/Mistral-7B-Instruct-v0.1";
 
 export async function POST(req: Request) {
@@ -13,7 +10,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Features are required.' }, { status: 400 });
     }
 
-    // This is the "prompt engineering" part. We're telling the AI exactly what we want.
     const prompt = `
       You are an expert real estate agent. Write a compelling, warm, and inviting property listing description.
       The tone should be professional yet appealing to a homebuyer.
@@ -36,8 +32,8 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           inputs: prompt,
           parameters: {
-            max_new_tokens: 250, // Controls the length of the output
-            temperature: 0.7,   // Controls the creativity (0.2=boring, 1.0=wild)
+            max_new_tokens: 250,
+            temperature: 0.7,
             repetition_penalty: 1.2,
           }
         }),
@@ -46,21 +42,16 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error("Hugging Face API Error:", errorBody);
       return NextResponse.json({ error: `AI model error: ${response.statusText}` }, { status: response.status });
     }
     
     const data = await response.json();
-    // The response is an array, we take the first element's generated_text
     const generatedText = data[0].generated_text;
-
-    // The model often repeats our prompt, so we clean it up.
     const listing = generatedText.split('LISTING DESCRIPTION:')[1]?.trim();
     
     return NextResponse.json({ listing });
 
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: 'An internal server error occurred.' }, { status: 500 });
   }
 }
